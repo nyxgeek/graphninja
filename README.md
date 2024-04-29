@@ -1,4 +1,4 @@
-#GraphNinja - Logging Bypass for Microsoft Graph/AAD
+# GraphNinja - Logging Bypass for Microsoft Graph/AAD
 
 ## This is DEFUNCT - For Reference Only
 
